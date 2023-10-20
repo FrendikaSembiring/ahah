@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     helper = HttpHelper();
     movies = await helper?.getMoviesByCategory(category, searchKeyword);
     setState(() {
-      movies = movies;
+      movies = movies?.where((movie) => movie.title.contains(searchKeyword)).toList();
     });
   }
 
@@ -57,7 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
     TextField(
       onChanged: (value) {
         setState(() {
-          searchKeyword = value;
+          searchKeyword = '';
+          for (int i = 0; i < value.length; i++) {
+            searchKeyword += value[i];
+          }
         });
         initialize(selectedCategory);
       },
@@ -106,6 +109,7 @@ Expanded(
   child: ListView.builder(
     itemCount: (movies?.length == null) ? 0 : movies!.length,
     itemBuilder: (BuildContext context, int position) {
+      // ignore: unnecessary_null_comparison
       if (movies![position].posterPath != null) {
         image = NetworkImage(iconBase + movies![position].posterPath);
       } else {
